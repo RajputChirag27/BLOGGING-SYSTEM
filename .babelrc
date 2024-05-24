@@ -1,0 +1,44 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "loose": true // Set the same value as in the plugins
+      }
+    ],
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    "babel-plugin-transform-typescript-metadata",
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ],
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "@config": "./src/config",
+          // "@constant": "./src/constants",
+          // "@controllers": "./src/controllers",
+          // "@enum": "./src/enum",
+          // "@interfaces": "./src/interfaces",
+          // "@middlewares": "./src/middlewares",
+          // "@models": "./src/models",
+          // "@services": "./src/services",
+          // "@utils": "./src/utils",
+          // "@validations": "./src/validations"
+        }
+      }
+    ]
+  ]
+}
