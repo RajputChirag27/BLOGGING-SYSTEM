@@ -35,7 +35,7 @@ export class UserController {
      if(result){
        res.send({result,verified : true})
      } else{
-      throw new CustomError("UserNotFound", statusCode.NOT_FOUND, "User isn't found")
+      throw new CustomError("InvalidToken", statusCode.NOT_FOUND, "Token is invalid")
      }
     } catch (err) {
         errorHandler(req, res, next, err)
