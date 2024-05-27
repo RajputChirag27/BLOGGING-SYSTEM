@@ -15,6 +15,7 @@ import QRCode from 'qrcode'
 import speakeasy from 'speakeasy'
 import { User } from 'src/models/userModel'
 import { CustomError } from '../utils'
+import fs from 'fs'
 
 @controller('/user')
 export class UserController {
@@ -59,17 +60,22 @@ export class UserController {
       const user = new User(req.body)
       const result = await user.save()
 
-      // Generate the QR code
-      const QRCodeToDataURL = promisify(QRCode.toDataURL)
-      const image_data = await QRCodeToDataURL(secret.otpauth_url)
+      // // Generate the QR code
+      // const QRCodeToDataURL = promisify(QRCode.toDataURL)
+      // const image_data = await QRCodeToDataURL(secret.otpauth_url)
+
+      const QRCodeToBuffer = promisify(QRCode.toBuffer);
+      const qrBuffer = await QRCodeToBuffer(secret.otpauth_url);
 
       // res.send(image_data);
-      res.contentType('text/html');
+      // res.contentType('text/html');
 
-      const image = `
-      <img src="${image_data}" type="base64">
-      `
-      res.send(image);
+      // const image = `
+      // <img src="${image_data}" type="base64">
+      // `
+      res.contentType('image/png');
+      
+      res.send(qrBuffer);
       // Send the response with the user and QR code
       // res.status(200).json({
       //   user: result,
@@ -84,4 +90,7 @@ export class UserController {
       }
     }
   }
+
+
+  
 }
