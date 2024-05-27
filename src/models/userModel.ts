@@ -1,8 +1,10 @@
 import mongoose, { Schema } from 'mongoose'
 import { UserInterface } from '../interface'
 import { Types } from 'mongoose'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 
-const userSchema = new Schema<UserInterface>(
+const UserSchema = new Schema<UserInterface>(
   {
     username: {
       type: String,
@@ -41,4 +43,23 @@ const userSchema = new Schema<UserInterface>(
   { timestamps: true }
 )
 
-export const User = mongoose.model<UserInterface>('User', userSchema)
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next()
+  }
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
+  next()
+})
+
+UserSchema.methods.getSignedToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRESIN
+  })
+}
+
+UserSchema.methods.matchPasswords = async function (password) {
+  return await bcrypt.compare(password, this.password)
+}
+
+export const User = mongoose.model<UserInterface>('User', UserSchema)

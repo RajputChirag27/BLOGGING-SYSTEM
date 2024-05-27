@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
 import { CustomError, statusCode } from '../utils'
+import { AuthRequest } from '../interface'
 
 export const errorHandler = (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction,
   err: any

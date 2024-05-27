@@ -8,10 +8,10 @@ appConfig.dbConfig
 const app = express()
 const port = process.env.PORT || 3000
 
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs')
 
 // Set views directory (optional, EJS looks in 'views' directory by default)
-app.set('views', __dirname + '/view');
+app.set('views', __dirname + '/view')
 // Middlewares
 app.use(express.json())
 app.use(express.static('public'))

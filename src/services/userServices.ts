@@ -3,6 +3,9 @@ import { UserInterface, UserServiceInterface } from '../interface'
 import { User } from '../models/userModel'
 import { CustomError, statusCode } from '../utils'
 import messages from 'src/utils/messages'
+import speakeasy from 'speakeasy'
+import QRCode from 'qrcode'
+import { promisify } from 'util'
 
 @injectable()
 export class UserService implements UserServiceInterface {
@@ -11,9 +14,25 @@ export class UserService implements UserServiceInterface {
     return User.find()
   }
 
+  async verifyUser(email,token){
+    const user = await User.findOne({email:email});
+    const secret:any = user.secret;
+    const base32 = secret.base32;
+    const verified = speakeasy.totp.verify({ token, encoding: 'base32', secret: base32 });
+    if(verified){
+      return await user.getSignedToken()
+    }
+    return null
+  }
+
   async createUser(body) {
-    const { role, password, email, username, secret }: UserInterface = body
+    // Generate the secret for the user
+    body.secret = speakeasy.generateSecret({ length: 20 })
+    const secret = body.secret
+
+    // Create and save the user
     const user: UserInterface = new User(body)
+    const result = await user.save()
     if (!user) {
       throw new CustomError(
         messages.User_Not_Created.name,
@@ -21,8 +40,13 @@ export class UserService implements UserServiceInterface {
         messages.User_Not_Created.message
       )
     }
-    const result = await user.save()
-    console.log(result)
-    return result
+    // // Generate the QR code
+    // const QRCodeToDataURL = promisify(QRCode.toDataURL)
+    // const image_data = await QRCodeToDataURL(secret.otpauth_url)
+
+    const QRCodeToBuffer = promisify(QRCode.toBuffer)
+    const qrBuffer = await QRCodeToBuffer(secret.otpauth_url)
+
+    return qrBuffer
   }
 }

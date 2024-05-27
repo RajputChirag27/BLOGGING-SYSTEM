@@ -11,4 +11,6 @@ export interface UserInterface extends Document {
   isBlocked?: boolean
   createdAt?: Date
   updatedAt?: Date
+  getSignedToken(): string
+  matchPasswords(password : string): boolean
 }
