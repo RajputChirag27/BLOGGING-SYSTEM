@@ -6,7 +6,7 @@ import messages from '../utils/messages'
 import speakeasy from 'speakeasy'
 import QRCode from 'qrcode'
 import { promisify } from 'util'
-import bcrypt from 'bcrypt'
+
 
 @injectable()
 export class UserService implements UserServiceInterface {
