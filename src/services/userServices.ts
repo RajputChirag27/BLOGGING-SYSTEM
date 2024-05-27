@@ -2,27 +2,45 @@ import { injectable } from 'inversify'
 import { UserInterface, UserServiceInterface } from '../interface'
 import { User } from '../models/userModel'
 import { CustomError, statusCode } from '../utils'
-import messages from 'src/utils/messages'
+import messages from '../utils/messages'
 import speakeasy from 'speakeasy'
 import QRCode from 'qrcode'
 import { promisify } from 'util'
+import bcrypt from 'bcrypt'
 
 @injectable()
 export class UserService implements UserServiceInterface {
-  constructor() {}
+  constructor() { }
   async getUsers() {
     return User.find()
   }
 
-  async verifyUser(email,token){
-    const user = await User.findOne({email:email});
-    const secret:any = user.secret;
+  async login(email, password) {
+    const user : UserInterface = await User.findOne({ email: email });
+    if (!user) {
+      throw new CustomError(messages.INVALID_CREDENTIALS.name, statusCode.UNAUTHORIZED, messages.INVALID_CREDENTIALS.message);
+    }
+    const matchPasswords = await user.matchPasswords(password);
+    if (!matchPasswords) {
+      throw new CustomError(messages.INVALID_CREDENTIALS.name, statusCode.UNAUTHORIZED, messages.INVALID_CREDENTIALS.message
+      );
+    }
+    if(user && matchPasswords){
+      const token: string = await user.getSignedToken();
+      return token;
+    }
+    return null;
+  }
+
+  async verifyUser(email, token) {
+    const user: UserInterface = await User.findOne({ email: email });
+    const secret: any = user.secret;
     const base32 = secret.base32;
     const verified = speakeasy.totp.verify({ token, encoding: 'base32', secret: base32 });
-    if(verified){
+    if (verified) {
       return await user.getSignedToken()
     }
-    return null
+    return null;
   }
 
   async createUser(body) {

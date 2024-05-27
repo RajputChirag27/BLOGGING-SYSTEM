@@ -27,13 +27,25 @@ export class UserController {
     }
   }
 
+  @httpPost('/login')
+  public async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body
+      const jwtToken = await this.userService.login(email, password)
+      if(jwtToken)
+      res.send({jwtToken, verified: true});
+      } catch (err) {
+        errorHandler(req, res, next, err)
+        }
+        }
+
   @httpPost('/verify')
   public async verify(req: Request, res: Response, next: NextFunction) {
     try {
      const {email,token} = req.body;
-     const result = await this.userService.verifyUser(email,token)
-     if(result){
-       res.send({result,verified : true})
+     const jwtToken = await this.userService.verifyUser(email,token)
+     if(jwtToken){
+       res.send({jwtToken,verified : true})
      } else{
       throw new CustomError("InvalidToken", statusCode.NOT_FOUND, "Token is invalid")
      }
