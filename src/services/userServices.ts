@@ -9,21 +9,33 @@ import { promisify } from 'util'
 
 @injectable()
 export class UserService implements UserServiceInterface {
-  constructor() {}
+  constructor() { }
   async getUsers() {
     return User.find()
   }
-
-  async verifyUser(email,token){
-    const user = await User.findOne({email:email});
-    const secret:any = user.secret;
+  async verifyUser(email, token) {
+    console.log(token);
+    const user = await User.findOne({ email: email });
+    console.log(user);
+    const secret : any = user.secret;
+    console.log(secret);
     const base32 = secret.base32;
-    const verified = speakeasy.totp.verify({ token, encoding: 'base32', secret: base32 });
-    if(verified){
-      return await user.getSignedToken()
+  
+    // Adjust the window parameter if needed
+    const verified = speakeasy.totp.verify({
+      secret: base32,
+      encoding: 'base32',
+      token: token,
+      window: 1 // Allow for a tolerance of 1 time step before and after the current time step
+    });
+  
+    console.log(verified);
+    if (!verified) {
+      throw new CustomError("UserNotVerified", statusCode.FORBIDDEN, "User is not verified");
     }
-    return null
+    return user.getSignedToken();
   }
+  
 
   async createUser(body) {
     // Generate the secret for the user
