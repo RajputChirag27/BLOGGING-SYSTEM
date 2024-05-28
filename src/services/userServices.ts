@@ -2,7 +2,7 @@ import { injectable } from 'inversify'
 import { UserInterface, UserServiceInterface } from '../interface'
 import { User } from '../models/userModel'
 import { CustomError, statusCode } from '../utils'
-import messages from 'src/utils/messages'
+import messages from '../utils/messages'
 import speakeasy from 'speakeasy'
 import QRCode from 'qrcode'
 import { promisify } from 'util'
@@ -13,6 +13,24 @@ export class UserService implements UserServiceInterface {
   async getUsers() {
     return User.find()
   }
+
+  async login(email, password) {
+    const user : UserInterface = await User.findOne({ email: email });
+    if (!user) {
+      throw new CustomError(messages.INVALID_CREDENTIALS.name, statusCode.UNAUTHORIZED, messages.INVALID_CREDENTIALS.message);
+    }
+    const matchPasswords = await user.matchPasswords(password);
+    if (!matchPasswords) {
+      throw new CustomError(messages.INVALID_CREDENTIALS.name, statusCode.UNAUTHORIZED, messages.INVALID_CREDENTIALS.message
+      );
+    }
+    if(user && matchPasswords){
+      const token: string = await user.getSignedToken();
+      return token;
+    }
+    return null;
+  }
+
   async verifyUser(email, token) {
     console.log(token);
     const user = await User.findOne({ email: email });
@@ -20,18 +38,9 @@ export class UserService implements UserServiceInterface {
     const secret : any = user.secret;
     console.log(secret);
     const base32 = secret.base32;
-  
-    // Adjust the window parameter if needed
-    const verified = speakeasy.totp.verify({
-      secret: base32,
-      encoding: 'base32',
-      token: token,
-      window: 1 // Allow for a tolerance of 1 time step before and after the current time step
-    });
-  
-    console.log(verified);
-    if (!verified) {
-      throw new CustomError("UserNotVerified", statusCode.FORBIDDEN, "User is not verified");
+    const verified = speakeasy.totp.verify({ token, encoding: 'base32', secret: base32 });
+    if (verified) {
+      return await user.getSignedToken()
     }
     return user.getSignedToken();
   }
