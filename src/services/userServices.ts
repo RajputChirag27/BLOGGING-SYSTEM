@@ -11,7 +11,15 @@ import { promisify } from 'util'
 export class UserService implements UserServiceInterface {
   constructor() { }
   async getUsers() {
-    return User.find()
+    return User.find({isDeleted : false});
+  }
+
+  async getDeletedUsers() {
+    return User.find({isDeleted : true});
+  }
+
+  async getAllUsers() {
+    return User.find({isDeleted : false});
   }
 
   async login(email, password) {

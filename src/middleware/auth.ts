@@ -6,7 +6,7 @@ import { NextFunction, Response } from 'express'
 import { AuthRequest } from '../interface'
 import { errorHandler } from '../handler/errorHandler'
 
-class AuthMiddleware extends BaseMiddleware {
+export class AuthMiddleware extends BaseMiddleware {
   async handler(req: AuthRequest, res: Response, next: NextFunction) {
     let token
     if (

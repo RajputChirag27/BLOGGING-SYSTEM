@@ -1,5 +1,10 @@
 export const TYPES = {
+  // Controllers
   UserController: Symbol.for('UserController'),
 
-  UserService: Symbol.for('UserService')
+  // Services
+  UserService: Symbol.for('UserService'),
+
+    // Middlewares
+    AuthMiddleware : Symbol.for('AuthMiddleware')
 }
