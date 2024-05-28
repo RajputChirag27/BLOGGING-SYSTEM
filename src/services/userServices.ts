@@ -11,15 +11,15 @@ import { promisify } from 'util'
 export class UserService implements UserServiceInterface {
   constructor() { }
   async getUsers() {
-    return User.find({isDeleted : false});
+    return await User.find({isDeleted : false});
   }
 
   async getDeletedUsers() {
-    return User.find({isDeleted : true});
+    return await User.find({isDeleted : true});
   }
 
   async getAllUsers() {
-    return User.find({isDeleted : false});
+    return await User.find();
   }
 
   async login(email, password) {
@@ -53,7 +53,6 @@ export class UserService implements UserServiceInterface {
     return user.getSignedToken();
   }
   
-
   async createUser(body) {
     // Generate the secret for the user
     body.secret = speakeasy.generateSecret({ length: 20 })
