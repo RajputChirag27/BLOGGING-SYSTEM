@@ -50,7 +50,7 @@ export class UserService implements UserServiceInterface {
     // Generate the secret for the user
     body.secret = speakeasy.generateSecret({ length: 20 })
     const secret = body.secret
-
+    console.log(body)
     // Create and save the user
     const user: UserInterface = new User(body)
     const result = await user.save()

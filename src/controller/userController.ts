@@ -27,6 +27,21 @@ export class UserController {
     }
   }
 
+  @httpPost('/')
+  public async createUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      console.log(req.body)
+      const qrBuffer = await this.userService.createUser(req.body)
+      res.contentType('image/png')
+      res.send(qrBuffer)
+    } catch (err) {
+      console.error('Error in createUser:', err)
+      if (!res.headersSent) {
+        errorHandler(req, res, next, err)
+      }
+    }
+  }
+
   @httpPost('/login')
   public async login(req: Request, res: Response, next: NextFunction) {
     try {
@@ -54,17 +69,5 @@ export class UserController {
     }
   }
 
-  @httpPost('/')
-  public async createUser(req: Request, res: Response, next: NextFunction) {
-    try {
-      const qrBuffer = await this.userService.createUser(req.body)
-      res.contentType('image/png')
-      res.send(qrBuffer)
-    } catch (err) {
-      console.error('Error in createUser:', err)
-      if (!res.headersSent) {
-        errorHandler(req, res, next, err)
-      }
-    }
-  }
+ 
 }
