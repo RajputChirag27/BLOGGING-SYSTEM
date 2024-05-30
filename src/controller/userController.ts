@@ -3,7 +3,7 @@ import {
   httpDelete,
   httpGet,
   httpPost,
-  httpPut,
+  httpPut
 } from 'inversify-express-utils'
 import { inject } from 'inversify'
 import { TYPES } from '../types'
@@ -14,9 +14,6 @@ import { CustomError, statusCode } from '../utils'
 import { AuthRequest } from '../interface'
 import { moduleType } from '../utils'
 import { permission } from 'process'
-
-
-
 
 @controller('/user', moduleType('users'))
 export class UserController {
@@ -34,31 +31,48 @@ export class UserController {
     }
   }
 
-  @httpGet('/all',TYPES.AuthMiddleware,TYPES.PermissionMiddleware,TYPES.CachingMiddleware) 
-  public async getAllUsers(req: AuthRequest, res: Response, next: NextFunction) {
+  @httpGet(
+    '/all',
+    TYPES.AuthMiddleware,
+    TYPES.PermissionMiddleware,
+    TYPES.CachingMiddleware
+  )
+  public async getAllUsers(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const permissions = req.permission;
-      const query = req.query;
-      console.log("permissions : " + permissions.roleName)
+      const permissions = req.permission
+      const query = req.query
+      console.log('permissions : ' + permissions.roleName)
       // console.log(query);
-      const result = await this.userService.getAllUsers(permissions,query)
+      const result = await this.userService.getAllUsers(permissions, query)
       res.send(result)
     } catch (err) {
       errorHandler(req, res, next, err)
     }
   }
 
-  @httpGet('/protected', TYPES.AuthMiddleware,TYPES.PermissionMiddleware,TYPES.CachingMiddleware)
+  @httpGet(
+    '/protected',
+    TYPES.AuthMiddleware,
+    TYPES.PermissionMiddleware,
+    TYPES.CachingMiddleware
+  )
   public async protected(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       // console.log(req.permission)
-      const permissions = req.permission;
-      res.send({message:"This is protected Route",permissions , isAuthorized: true})
-    }catch(err){
+      const permissions = req.permission
+      res.send({
+        message: 'This is protected Route',
+        permissions,
+        isAuthorized: true
+      })
+    } catch (err) {
       errorHandler(req, res, next, err)
     }
- 
-}
+  }
 
   @httpPost('/')
   public async createUser(req: Request, res: Response, next: NextFunction) {
@@ -80,63 +94,65 @@ export class UserController {
     try {
       const { email, password } = req.body
       const jwtToken = await this.userService.login(email, password)
-      if(jwtToken)
-      res.send({jwtToken, verified: true});
-      } catch (err) {
-        errorHandler(req, res, next, err)
-        }
-        }
+      if (jwtToken) res.send({ jwtToken, verified: true })
+    } catch (err) {
+      errorHandler(req, res, next, err)
+    }
+  }
 
   @httpPost('/verify')
   public async verify(req: Request, res: Response, next: NextFunction) {
     try {
-     const {email,token} = req.body;
-     const jwtToken = await this.userService.verifyUser(email,token)
-     if(jwtToken){
-       res.send({jwtToken,verified : true})
-     } else{
-      throw new CustomError("InvalidToken", statusCode.NOT_FOUND, "Token is invalid")
-     }
+      const { email, token } = req.body
+      const jwtToken = await this.userService.verifyUser(email, token)
+      if (jwtToken) {
+        res.send({ jwtToken, verified: true })
+      } else {
+        throw new CustomError(
+          'InvalidToken',
+          statusCode.NOT_FOUND,
+          'Token is invalid'
+        )
+      }
     } catch (err) {
-        errorHandler(req, res, next, err)
+      errorHandler(req, res, next, err)
     }
   }
 
   @httpPost('')
-  public async generateTokenFromRefreshToken(){
-
-  }
-
-
+  public async generateTokenFromRefreshToken() {}
 
   @httpPut('/:id', TYPES.AuthMiddleware)
   public async userUpdate(req: AuthRequest, res: Response, next: NextFunction) {
-    try{
-      const body = req.body;
-      const idFromToken = req.user.id;
-      const idFromRequest = req.params.id;
-      console.log(idFromToken, idFromRequest);
-      const result = await this.userService.updateUserbyId(body,idFromRequest,idFromToken);
-        res.send({result, isAuthorized: true})
-      
-    }catch(err){
+    try {
+      const body = req.body
+      const idFromToken = req.user.id
+      const idFromRequest = req.params.id
+      console.log(idFromToken, idFromRequest)
+      const result = await this.userService.updateUserbyId(
+        body,
+        idFromRequest,
+        idFromToken
+      )
+      res.send({ result, isAuthorized: true })
+    } catch (err) {
       errorHandler(req, res, next, err)
     }
-
   }
 
   @httpDelete('/:id', TYPES.AuthMiddleware)
   public async userDelete(req: AuthRequest, res: Response, next: NextFunction) {
-    try{
-      const idFromToken = req.user.id;
-      const idFromRequest = req.params.id;
-      console.log(idFromToken, idFromRequest);
-      const result = await this.userService.deleteUserbyId(idFromRequest,idFromToken);
-        res.send({result, isAuthorized: true})
-      
-    }catch(err){
+    try {
+      const idFromToken = req.user.id
+      const idFromRequest = req.params.id
+      console.log(idFromToken, idFromRequest)
+      const result = await this.userService.deleteUserbyId(
+        idFromRequest,
+        idFromToken
+      )
+      res.send({ result, isAuthorized: true })
+    } catch (err) {
       errorHandler(req, res, next, err)
     }
-
   }
 }

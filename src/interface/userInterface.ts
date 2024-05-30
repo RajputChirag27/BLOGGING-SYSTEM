@@ -12,8 +12,7 @@ export interface UserInterface extends Document {
   createdAt?: Date
   updatedAt?: Date
   refreshToken?: string
-  permissions?: object
   getSignedToken(): string
-  matchPasswords(password : string): boolean
-  setRefreshToken(token : object) : string
+  matchPasswords(password: string): boolean
+  setRefreshToken(token: object): string
 }

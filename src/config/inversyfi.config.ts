@@ -11,15 +11,15 @@ const container = new Container()
 //Controllers
 container.bind<UserController>(TYPES.UserController).to(UserController)
 
-
 //Services
 container.bind<UserService>(TYPES.UserService).to(UserService)
 container.bind<PermissionService>(TYPES.PermissionService).to(PermissionService)
 
-
 // Middlewares
-container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware);
-container.bind<CachingMiddleware>(TYPES.CachingMiddleware).to(CachingMiddleware);
-container.bind<PermissionMiddleware>(TYPES.PermissionMiddleware).to(PermissionMiddleware)
+container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware)
+container.bind<CachingMiddleware>(TYPES.CachingMiddleware).to(CachingMiddleware)
+container
+  .bind<PermissionMiddleware>(TYPES.PermissionMiddleware)
+  .to(PermissionMiddleware)
 
 export default container

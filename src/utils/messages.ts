@@ -3,7 +3,7 @@ const messages = {
     name: 'UserNotCreated',
     message: 'User is not Created'
   },
-  INVALID_CREDENTIALS :{
+  INVALID_CREDENTIALS: {
     name: 'InvalidCredentials',
     message: 'Invalid Credentials'
   }
