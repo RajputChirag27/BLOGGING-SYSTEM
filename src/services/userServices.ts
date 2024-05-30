@@ -6,7 +6,7 @@ import messages from '../utils/messages'
 import speakeasy from 'speakeasy'
 import QRCode from 'qrcode'
 import { promisify } from 'util'
-import { PipelineStage } from 'mongoose'
+import mongoose, { PipelineStage, isObjectIdOrHexString } from 'mongoose'
 
 @injectable()
 export class UserService implements UserServiceInterface {
@@ -77,10 +77,11 @@ export class UserService implements UserServiceInterface {
            email : {$ifNull: ["$email", ""]},
            role:  {$ifNull: ["$role", ""]},
         }
-      }
+      },
+      
     ]
-    return await User.aggregate(pipeline).exec();
 
+    return await User.aggregate(pipeline).exec();
   
     // if(authors && totalRecords && limit && page){
     //   return Object.assign(
@@ -145,9 +146,74 @@ export class UserService implements UserServiceInterface {
   }
 
 
-  async updateUserbyId(body){
+  async updateUserbyId(body,idFromRequest,idFromToken){
+    if(idFromToken !== idFromRequest){
+      throw new CustomError("Unauthorized",statusCode.UNAUTHORIZED, "User is not Authorized");
+    }
+    const {username,email,password} = body;
+      const sanitizedBody =  {username,email,password};
+      for (const [key, value] of Object.entries(sanitizedBody)) {
+        if (value == null) {  // Checks for both null and undefined
+          throw new CustomError('MissingFieldError',statusCode.BAD_REQUEST ,`Missing required field: ${key}`);
+        }
+      }
+      const user = await User.findOne({ email: email });
+      if(!user){
+        throw new CustomError('UserNotFoundError',statusCode.NOT_FOUND ,`User with email ${email}`);
+      }
 
-    const result = await User.findByIdAndUpdate()
+      console.log(sanitizedBody)
+      const result = await User.findByIdAndUpdate(idFromToken,sanitizedBody, {new : true});
+      console.log(result)
+      if(!result){
+        throw new CustomError('NotUpdated',statusCode.BAD_REQUEST , `Data not updated`);
+      }
+      const pipeline : PipelineStage[] = [
+        {
+          $match: {
+            isDeleted : false,
+            _id : mongoose.Types.ObjectId.createFromHexString(idFromRequest)
+          }
+        },
+        {
+          $lookup: {
+            from: "roles",
+            localField: "role",
+            foreignField: "_id",
+            as: "role"
+          }
+        },
+        {
+          $unwind: {
+            path: "$role",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            role: "$role.role"
+          }
+        },
+        {
+          $project: {
+             username: { $ifNull: ["$username", ""]},
+             email : {$ifNull: ["$email", ""]},
+             role:  {$ifNull: ["$role", ""]},
+          }
+        },
+        
+      ]
+  
+      return await User.aggregate(pipeline).exec();
+  }
+
+  async deleteUserbyId(idFromRequest,idFromToken){
+    if(idFromRequest==idFromToken){
+      const result = await User.findByIdAndUpdate(idFromToken,{isDeleted : true},{new : true});
+      return {message: "User Deleted Successfully", success : true}
+    }else{
+      throw new CustomError(messages.INVALID_CREDENTIALS.name, statusCode.UNAUTHORIZED, messages.INVALID_CREDENTIALS.message);
+    }
   }
   
   async createUser(body) {
@@ -175,3 +241,4 @@ export class UserService implements UserServiceInterface {
     return qrBuffer
   }
 }
+

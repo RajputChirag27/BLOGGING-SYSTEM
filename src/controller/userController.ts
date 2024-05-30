@@ -1,5 +1,6 @@
 import {
   controller,
+  httpDelete,
   httpGet,
   httpPost,
   httpPut,
@@ -108,14 +109,29 @@ export class UserController {
 
 
 
-  @httpPut('/:id')
+  @httpPut('/:id', TYPES.AuthMiddleware)
   public async userUpdate(req: AuthRequest, res: Response, next: NextFunction) {
     try{
       const body = req.body;
-      body.idFromToken = req.user.id;
-      body.idFromRequest = req.params.id;
-      console.log(body.idFromToken,body.idFromRequest)
-      const result = await this.userService.updateUserbyId(body);
+      const idFromToken = req.user.id;
+      const idFromRequest = req.params.id;
+      console.log(idFromToken, idFromRequest);
+      const result = await this.userService.updateUserbyId(body,idFromRequest,idFromToken);
+        res.send({result, isAuthorized: true})
+      
+    }catch(err){
+      errorHandler(req, res, next, err)
+    }
+
+  }
+
+  @httpDelete('/:id', TYPES.AuthMiddleware)
+  public async userDelete(req: AuthRequest, res: Response, next: NextFunction) {
+    try{
+      const idFromToken = req.user.id;
+      const idFromRequest = req.params.id;
+      console.log(idFromToken, idFromRequest);
+      const result = await this.userService.deleteUserbyId(idFromRequest,idFromToken);
         res.send({result, isAuthorized: true})
       
     }catch(err){

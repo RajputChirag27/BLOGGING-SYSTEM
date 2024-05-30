@@ -56,6 +56,19 @@ UserSchema.pre('save', async function (next) {
   next()
 })
 
+
+UserSchema.pre('findOneAndUpdate', async function (next) {
+  const update :any = this.getUpdate();
+  if (update.password) {
+    const salt = await bcrypt.genSalt(10);
+    update.password = await bcrypt.hash(update.password, salt);
+  }
+  next();
+});
+
+
+
+
 UserSchema.methods.getSignedToken = function () {
   return jwt.sign({ id: this._id, role:this.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRESIN
