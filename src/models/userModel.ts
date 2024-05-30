@@ -21,7 +21,8 @@ const UserSchema = new Schema<UserInterface>(
       required: true
     },
     role: {
-      type: String,
+      type: Schema.ObjectId,
+      ref: 'Role',
       required: true
     },
     secret: {
@@ -38,6 +39,9 @@ const UserSchema = new Schema<UserInterface>(
     isBlocked: {
       type: Boolean,
       default: false
+    },
+    refreshToken: {
+      type: String
     }
   },
   { timestamps: true }
@@ -53,10 +57,16 @@ UserSchema.pre('save', async function (next) {
 })
 
 UserSchema.methods.getSignedToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id, role:this.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRESIN
   })
 }
+
+// UserSchema.methods.setRefreshToken = function (payload) {
+//   return jwt.sign({ payload }, process.env.JWT_SECRET, {
+//     expiresIn: process.env.REFRESH_JWT_EXPIRESIN
+//   })
+// }
 
 UserSchema.methods.matchPasswords = async function (password) {
   return await bcrypt.compare(password, this.password)

@@ -1,3 +1,3 @@
 import { AuthMiddleware } from "./auth";
-
-export {AuthMiddleware}
+import { CachingMiddleware } from "./cachingMiddleware";
+export {AuthMiddleware,CachingMiddleware}

@@ -1,15 +1,25 @@
 import { Container } from 'inversify'
 import { TYPES } from '../types'
-import { UserService } from '../services/userServices'
+import { PermissionService, UserService } from '../services'
 import { UserController } from '../controller/userController'
 import { AuthMiddleware } from '../middleware/auth'
+import { CachingMiddleware } from '../middleware'
+import { PermissionMiddleware } from '../middleware/permissionMiddleware'
 
 const container = new Container()
 
-container.bind<UserService>(TYPES.UserService).to(UserService)
+//Controllers
 container.bind<UserController>(TYPES.UserController).to(UserController)
 
 
+//Services
+container.bind<UserService>(TYPES.UserService).to(UserService)
+container.bind<PermissionService>(TYPES.PermissionService).to(PermissionService)
+
+
+// Middlewares
 container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware);
+container.bind<CachingMiddleware>(TYPES.CachingMiddleware).to(CachingMiddleware);
+container.bind<PermissionMiddleware>(TYPES.PermissionMiddleware).to(PermissionMiddleware)
 
 export default container
