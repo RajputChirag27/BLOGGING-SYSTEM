@@ -67,7 +67,7 @@ export class UserService implements UserServiceInterface {
   }
 
   async login(email, password) {
-    const user: UserInterface = await User.findOne({ email: email })
+    const user: UserInterface | null = await User.findOne({ email: email })
     if (!user) {
       throw new CustomError(
         messages.INVALID_CREDENTIALS.name,

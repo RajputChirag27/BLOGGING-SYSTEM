@@ -14,6 +14,7 @@ import { CustomError, statusCode } from '../utils'
 import { AuthRequest } from '../interface'
 import { moduleType } from '../utils'
 import { permission } from 'process'
+import { userSchema } from '../validations'
 
 @controller('/user', moduleType('users'))
 export class UserController {
@@ -78,6 +79,9 @@ export class UserController {
   public async createUser(req: Request, res: Response, next: NextFunction) {
     try {
       console.log(req.body)
+      const  {username,email,role,password } = req.body;
+      const body = {username,email,role,password };
+      const validatedBody = await userSchema.validate(body);
       const qrBuffer = await this.userService.createUser(req.body)
       res.contentType('image/png')
       res.send(qrBuffer)
