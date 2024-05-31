@@ -10,7 +10,7 @@ import { TYPES } from '../types'
 import { UserService } from '../services/userServices'
 import { Request, Response, NextFunction } from 'express'
 import { errorHandler } from '../handler/errorHandler'
-import { CustomError, statusCode } from '../utils'
+import { ApiHandler, CustomError, statusCode } from '../utils'
 import { AuthRequest } from '../interface'
 import { moduleType } from '../utils'
 import { permission } from 'process'
@@ -84,7 +84,7 @@ export class UserController {
       const validatedBody = await userSchema.validate(body);
       const qrBuffer = await this.userService.createUser(req.body)
       res.contentType('image/png')
-      res.send(qrBuffer)
+      res.send(new ApiHandler(qrBuffer))
     } catch (err) {
       console.error('Error in createUser:', err)
       if (!res.headersSent) {
