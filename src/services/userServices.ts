@@ -20,24 +20,6 @@ export class UserService implements UserServiceInterface {
   }
 
   async getAllUsers(permission, queries) {
-    // const queryObject = {...query};
-
-    // queryObject.remove
-
-    // const queryString = queryString.
-
-    // const pipeline : PipelineStage[] = []
-
-    // const userPipeline : object =
-
-    // if(permission.role == 'admin'){
-    //   pipeline.push(
-
-    //   )
-    // } else{
-    //   throw new CustomError("Unauthorized",statusCode.UNAUTHORIZED, "User is not Authorized");
-    // }
-
     console.log(permission.read, permission.roleName)
     if (permission.read !== true || permission.roleName !== 'admin') {
       throw new CustomError(
@@ -82,29 +64,6 @@ export class UserService implements UserServiceInterface {
     ]
 
     return await User.aggregate(pipeline).exec()
-
-    // if(authors && totalRecords && limit && page){
-    //   return Object.assign(
-    //     {
-    //       data: {
-    //         status: true,
-    //         data: authors,
-    //         totalPages: Math.ceil(totalRecords / limit),
-    //         page,
-    //         limit,
-    //         totalRecords,
-    //       },
-    //     },
-    //     { statusCode: statusCode.OK }
-    //   )
-
-    // }else{
-    //   throw new CustomError(
-    //     'CastError',
-    //     statusCode.BAD_REQUEST,
-    //     'This is cast Error'
-    //   )
-    // }
   }
 
   async login(email, password) {
@@ -267,8 +226,6 @@ export class UserService implements UserServiceInterface {
       )
     }
     // // Generate the QR code
-    // const QRCodeToDataURL = promisify(QRCode.toDataURL)
-    // const image_data = await QRCodeToDataURL(secret.otpauth_url)
 
     const QRCodeToBuffer = promisify(QRCode.toBuffer)
     const qrBuffer = await QRCodeToBuffer(secret.otpauth_url)
