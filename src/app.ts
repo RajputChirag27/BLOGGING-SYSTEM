@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { InversifyExpressServer } from 'inversify-express-utils'
-import * as appConfig from '@config'
+import * as appConfig from './config'
 import express from 'express'
 import { CachingMiddleware } from './middleware'
 import { TYPES } from './types'
