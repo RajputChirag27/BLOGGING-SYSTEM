@@ -1,7 +1,7 @@
 import { Container } from 'inversify'
 import { TYPES } from '../types'
 import { PermissionService, UserService } from '../services'
-import { UserController } from '../controller/userController'
+import { UserController, SuperAdminController } from '../controller'
 import { AuthMiddleware } from '../middleware/auth'
 import { CachingMiddleware } from '../middleware'
 import { PermissionMiddleware } from '../middleware/permissionMiddleware'
@@ -10,6 +10,9 @@ const container = new Container()
 
 //Controllers
 container.bind<UserController>(TYPES.UserController).to(UserController)
+container
+  .bind<SuperAdminController>(TYPES.SuperAdminController)
+  .to(SuperAdminController)
 
 //Services
 container.bind<UserService>(TYPES.UserService).to(UserService)

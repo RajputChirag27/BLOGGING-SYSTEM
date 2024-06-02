@@ -1,4 +1,4 @@
-import container from './inversyfi.config'
+import container from './inversifyConfig'
 import * as dbConfig from './db/connection'
 
 export { container }

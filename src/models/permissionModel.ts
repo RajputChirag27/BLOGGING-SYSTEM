@@ -3,11 +3,12 @@ import mongoose, { Schema } from 'mongoose'
 const PermissionSchema = new Schema({
   moduleid: {
     type: Schema.ObjectId,
-    required: true,
-    unique: true
+    ref: 'Module',
+    required: true
   },
   roleid: {
     type: Schema.ObjectId,
+    ref: 'Role',
     required: true,
     unique: true
   },

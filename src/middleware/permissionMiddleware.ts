@@ -30,8 +30,8 @@ export class PermissionMiddleware extends BaseMiddleware {
   async handler(req: AuthRequest, res: Response, next: NextFunction) {
     const moduleName = req.headers.module as string
     const role: string = req.user.role
-    // console.log(moduleName)
-    // console.log(role)
+    console.log(moduleName)
+    console.log(role)
     const permissions: Permission[] =
       await this.permissionService.getPermissions(moduleName, role)
     const permission = permissions[0]

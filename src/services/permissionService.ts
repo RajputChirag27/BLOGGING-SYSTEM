@@ -1,5 +1,5 @@
 import { injectable } from 'inversify'
-import { Permission, Role } from '../models'
+import { Module, Permission, Role } from '../models'
 
 @injectable()
 export class PermissionService {
@@ -69,5 +69,21 @@ export class PermissionService {
 
     const result = await Permission.aggregate(permissions)
     return result
+  }
+  async addPermissions(body) {
+    const module = await Module.findOne({ name: body.name })
+    console.log(module)
+    const role = await Role.findOne({ role: body.role })
+    console.log(role)
+    const newPermission = new Permission({
+      moduleid: module._id,
+      roleid: role._id,
+      read: body.read,
+      write: body.write,
+      update: body.update,
+      delete: body.delete
+    })
+    await newPermission.save()
+    return newPermission
   }
 }

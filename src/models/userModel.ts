@@ -3,6 +3,7 @@ import { UserInterface } from '../interface'
 import { Types } from 'mongoose'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import { Role } from './roleModel'
 
 const UserSchema = new Schema<UserInterface>(
   {

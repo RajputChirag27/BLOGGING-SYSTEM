@@ -7,7 +7,7 @@ import {
 } from 'inversify-express-utils'
 import { inject } from 'inversify'
 import { TYPES } from '../types'
-import { UserService } from '../services/userServices'
+import { UserService } from '../services/'
 import { Request, Response, NextFunction } from 'express'
 import { errorHandler } from '../handler/errorHandler'
 import { ApiHandler, CustomError, statusCode } from '../utils'
@@ -76,15 +76,19 @@ export class UserController {
   }
 
   @httpPost('/')
-  public async createUser(req: Request, res: Response, next: NextFunction) {
+  public async createUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      console.log(req.body)
-      const  {username,email,role,password } = req.body;
-      const body = {username,email,role,password };
-      const validatedBody = await userSchema.validate(body);
-      const qrBuffer = await this.userService.createUser(req.body)
+      const { username, email, role, password } = req.body
+      const body = { username, email, role, password }
+      const validatedBody = await userSchema.validate(body)
+
+      const qrBuffer = await this.userService.createUser(validatedBody)
       res.contentType('image/png')
-      res.send(new ApiHandler(qrBuffer))
+      res.send(qrBuffer)
     } catch (err) {
       console.error('Error in createUser:', err)
       if (!res.headersSent) {
@@ -97,8 +101,8 @@ export class UserController {
   public async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body
-      const jwtToken = await this.userService.login(email, password);
-      req.headers.authorization = `Bearer ${jwtToken}`;
+      const jwtToken = await this.userService.login(email, password)
+      req.headers.authorization = `Bearer ${jwtToken}`
       if (jwtToken) res.send({ jwtToken, verified: true })
     } catch (err) {
       errorHandler(req, res, next, err)

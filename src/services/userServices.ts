@@ -1,12 +1,14 @@
 import { injectable } from 'inversify'
 import { UserInterface, UserServiceInterface } from '../interface'
-import { User } from '../models/userModel'
+import { Module, User } from '../models'
 import { CustomError, statusCode } from '../utils'
 import messages from '../utils/messages'
 import speakeasy from 'speakeasy'
 import QRCode from 'qrcode'
 import { promisify } from 'util'
 import mongoose, { PipelineStage, isObjectIdOrHexString } from 'mongoose'
+import { Role } from '../models'
+import { RoleInterface } from '../models/roleModel'
 
 @injectable()
 export class UserService implements UserServiceInterface {
@@ -212,24 +214,55 @@ export class UserService implements UserServiceInterface {
 
   async createUser(body) {
     // Generate the secret for the user
-    body.secret = speakeasy.generateSecret({ length: 20 })
-    const secret = body.secret
-    // console.log(body)
+    const secret = speakeasy.generateSecret({ length: 20 })
+    body.secret = secret
+
+    // Find the role
+    const role = await Role.findOne({ role: body.role })
+    if (!role) {
+      throw new CustomError(
+        'Role not found',
+        statusCode.BAD_REQUEST,
+        'Invalid role provided'
+      )
+    }
+    body.role = role._id
+
     // Create and save the user
-    const user: UserInterface = new User(body)
+    const user = new User(body)
     const result = await user.save()
-    if (!user) {
+    if (!result) {
       throw new CustomError(
         messages.User_Not_Created.name,
         statusCode.BAD_REQUEST,
         messages.User_Not_Created.message
       )
     }
-    // // Generate the QR code
 
+    // Generate the QR code
     const QRCodeToBuffer = promisify(QRCode.toBuffer)
     const qrBuffer = await QRCodeToBuffer(secret.otpauth_url)
 
     return qrBuffer
+  }
+
+  async assignRoles(roleData: string) {
+    const role = await Role.create({ role: roleData })
+    if (role) return role
+    throw new CustomError(
+      'RoleNotCreated',
+      statusCode.BAD_REQUEST,
+      'Role Not Created Successfully'
+    )
+  }
+
+  async addModel(moduleName: string) {
+    const module = await Module.create({ name: moduleName })
+    if (module) return module
+    throw new CustomError(
+      'ModuleNotCreated',
+      statusCode.BAD_REQUEST,
+      'Module Not Created Successfully'
+    )
   }
 }
