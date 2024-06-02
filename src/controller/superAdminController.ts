@@ -19,7 +19,7 @@ import { TYPES } from '../types'
 import { RoleInterface } from '../models/roleModel'
 dotenv.config()
 
-@controller('/superadmin', TYPES.AuthMiddleware)
+@controller('/superadmin', TYPES.AuthMiddleware,TYPES.IsSuperAdminMiddleware)
 export class SuperAdminController {
   constructor(
     @inject(TYPES.UserService) private userService: UserService,
@@ -34,6 +34,7 @@ export class SuperAdminController {
   ) {
     try {
       const role = req.body.role
+      console.log(role)
       const roles = await this.userService.assignRoles(role)
       res.send(new ApiHandler(roles))
     } catch (err) {

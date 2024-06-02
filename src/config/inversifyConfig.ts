@@ -5,6 +5,7 @@ import { UserController, SuperAdminController } from '../controller'
 import { AuthMiddleware } from '../middleware/auth'
 import { CachingMiddleware } from '../middleware'
 import { PermissionMiddleware } from '../middleware/permissionMiddleware'
+import { IsSuperAdminMiddleware } from '../middleware/superAdmin'
 
 const container = new Container()
 
@@ -24,5 +25,8 @@ container.bind<CachingMiddleware>(TYPES.CachingMiddleware).to(CachingMiddleware)
 container
   .bind<PermissionMiddleware>(TYPES.PermissionMiddleware)
   .to(PermissionMiddleware)
+container
+  .bind<IsSuperAdminMiddleware>(TYPES.IsSuperAdminMiddleware)
+  .to(IsSuperAdminMiddleware)
 
 export default container
