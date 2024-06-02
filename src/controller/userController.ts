@@ -93,7 +93,8 @@ export class UserController {
   public async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body
-      const jwtToken = await this.userService.login(email, password)
+      const jwtToken = await this.userService.login(email, password);
+      req.headers.authorization = `Bearer ${jwtToken}`;
       if (jwtToken) res.send({ jwtToken, verified: true })
     } catch (err) {
       errorHandler(req, res, next, err)
