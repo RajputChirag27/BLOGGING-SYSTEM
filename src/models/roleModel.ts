@@ -6,13 +6,13 @@ export interface RoleInterface extends Document {
 
 const RoleSchema = new Schema({
   role: { type: String, required: true, unique: true },
-  isActive : {
-    type : Boolean,
-    default : true
+  isActive: {
+    type: Boolean,
+    default: true
   },
-  isDeleted : {
-    type : Boolean,
-    default : false
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 })
 

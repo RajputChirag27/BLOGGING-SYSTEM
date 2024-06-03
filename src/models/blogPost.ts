@@ -16,6 +16,16 @@ const PostSchema = new Schema<BlogInterface>(
       type: String,
       required: true
     },
+    likes: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    dislikes: {
+      type: Number,
+      required: true,
+      default: 0
+    },
     isActive: {
       type: Boolean,
       default: true

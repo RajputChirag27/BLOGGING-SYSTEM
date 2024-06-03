@@ -35,7 +35,7 @@ const PermissionSchema = new Schema({
   isDeleted: {
     type: Boolean,
     default: false
-  },
+  }
 })
 
 export const Permission = mongoose.model('Permission', PermissionSchema)

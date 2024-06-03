@@ -22,7 +22,7 @@ export class IsSuperAdminMiddleware extends BaseMiddleware {
         const err = {
           name: 'ForbiddenError',
           statusCode: statusCode.UNAUTHORIZED,
-          message : "UnAuthorized User"
+          message: 'UnAuthorized User'
         }
         errorHandler(req, res, next, err)
       } else {

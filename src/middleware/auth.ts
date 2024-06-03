@@ -21,11 +21,7 @@ export class AuthMiddleware extends BaseMiddleware {
         req,
         res,
         next,
-        new CustomError(
-          'AuthorizationError',
-          401,
-          'Not authorized to access this route'
-        )
+        new CustomError('AuthorizationError', 401, 'Token not Found')
       )
     }
 

@@ -65,6 +65,7 @@ export class UserController {
     try {
       // console.log(req.permission)
       const permissions = req.permission
+      console.log(permissions)
       res.send({
         message: 'This is protected Route',
         permissions,
@@ -128,8 +129,38 @@ export class UserController {
     }
   }
 
-  @httpPost('')
-  public async generateTokenFromRefreshToken() {}
+  @httpPost('/checkIfExpired')
+  public async generateTokenFromRefreshToken(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const token = req.headers.authorization.split(' ')[1]
+      // console.log(token)
+      function isTokenExpired(token) {
+        // const payloadBase64 = token.split('.')[1];
+        const decodedJson = Buffer.from(token, 'base64').toString()
+        console.log(decodedJson)
+        const decoded = JSON.parse(decodedJson)
+        console.log(decoded)
+        const exp = decoded.exp
+        const expired = Date.now() >= exp * 1000
+        return expired
+      }
+
+      if (!isTokenExpired) {
+        throw new CustomError(
+          'InvalidToken',
+          statusCode.NOT_FOUND,
+          'Token not found'
+        )
+      }
+      res.send(new ApiHandler(isTokenExpired))
+    } catch (err) {
+      errorHandler(req, res, next, err)
+    }
+  }
 
   @httpPut('/:id', TYPES.AuthMiddleware)
   public async userUpdate(req: AuthRequest, res: Response, next: NextFunction) {

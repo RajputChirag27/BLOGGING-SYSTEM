@@ -5,10 +5,13 @@ import { Module, Permission, Role } from '../models'
 export class PermissionService {
   constructor() {}
   async getPermissions(module, role) {
-    console.log(role)
+    // console.log(role)
     let roles = await Role.findOne({ _id: role })
+    console.log(roles)
     // console.log(roles.role)
     let userRole: any = roles.role
+    console.log(userRole)
+    console.log(module)
 
     const permissions = [
       {

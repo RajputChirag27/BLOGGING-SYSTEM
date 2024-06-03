@@ -5,6 +5,8 @@ export interface BlogInterface {
   title?: string
   content?: string
   category?: string
+  likes?: number
+  dislikes?: number
   isActive?: boolean
   isDeleted?: boolean
   isBlocked?: boolean

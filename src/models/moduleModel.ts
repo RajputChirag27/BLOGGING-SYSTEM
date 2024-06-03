@@ -13,7 +13,7 @@ const ModuleSchema = new Schema({
   isDeleted: {
     type: Boolean,
     default: false
-  },
+  }
 })
 
 export const Module = mongoose.model('Module', ModuleSchema)

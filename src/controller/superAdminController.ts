@@ -19,7 +19,7 @@ import { TYPES } from '../types'
 import { RoleInterface } from '../models/roleModel'
 dotenv.config()
 
-@controller('/superadmin', TYPES.AuthMiddleware,TYPES.IsSuperAdminMiddleware)
+@controller('/superadmin', TYPES.AuthMiddleware, TYPES.IsSuperAdminMiddleware)
 export class SuperAdminController {
   constructor(
     @inject(TYPES.UserService) private userService: UserService,
