@@ -29,6 +29,11 @@ const UserSchema = new Schema<UserInterface>(
     secret: {
       type: Object
     },
+    profilePicture: {
+      type: String,
+      default:
+        'https://www.kindpng.com/picc/m/252-2524695_dummy-profile-image-jpg-hd-png-download.png'
+    },
     isActive: {
       type: Boolean,
       default: true

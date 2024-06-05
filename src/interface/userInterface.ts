@@ -6,6 +6,7 @@ export interface UserInterface extends Document {
   password?: string
   role?: ObjectId
   secret?: object
+  profilePicture?: string
   isActive?: boolean
   isDeleted?: boolean
   isBlocked?: boolean

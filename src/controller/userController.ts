@@ -46,7 +46,7 @@ export class UserController {
     try {
       const permissions = req.permission
       const query = req.query
-      console.log('permissions : ' + permissions.roleName)
+      console.log('permissions : ' + permissions)
       // console.log(query);
       const result = await this.userService.getAllUsers(permissions, query)
       res.send(result)
@@ -83,8 +83,9 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { username, email, role, password } = req.body
-      const body = { username, email, role, password }
+      const { username, email, role, password, profilePicture } = req.body
+      console.log({ username, email, role, password, profilePicture })
+      const body = { username, email, role, password, profilePicture }
       const validatedBody = await userSchema.validate(body)
 
       const qrBuffer = await this.userService.createUser(validatedBody)
@@ -195,6 +196,4 @@ export class UserController {
       errorHandler(req, res, next, err)
     }
   }
-
-  
 }

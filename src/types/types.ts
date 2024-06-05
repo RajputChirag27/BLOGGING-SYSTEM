@@ -5,6 +5,7 @@ export const TYPES = {
   // Services
   UserService: Symbol.for('UserService'),
   PermissionService: Symbol.for('PermissionService'),
+  BlogPostService: Symbol.for('BlogPostService'),
 
   // Middlewares
   AuthMiddleware: Symbol.for('AuthMiddleware'),

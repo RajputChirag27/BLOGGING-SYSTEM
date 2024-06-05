@@ -23,7 +23,10 @@ export class UserService implements UserServiceInterface {
 
   async getAllUsers(permission, queries) {
     console.log(permission.read, permission.roleName)
-    if (permission.read !== true || permission.roleName !== 'admin') {
+    if (
+      permission.read !== true &&
+      (permission.roleName !== 'admin' || permission.roleName !== 'superadmin')
+    ) {
       throw new CustomError(
         'Unauthorized',
         statusCode.UNAUTHORIZED,
@@ -60,7 +63,8 @@ export class UserService implements UserServiceInterface {
         $project: {
           username: { $ifNull: ['$username', ''] },
           email: { $ifNull: ['$email', ''] },
-          role: { $ifNull: ['$role', ''] }
+          role: { $ifNull: ['$role', ''] },
+          profilePicture: { $ifNull: ['$profilePicture', ''] }
         }
       }
     ]
